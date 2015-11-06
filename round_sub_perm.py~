@@ -62,8 +62,9 @@ def encrypt():
 	print("\n")
 	t = plain_text
 	for i in range(3): 
-		print("Round #{0} key       : {1}".format(i+2,round_key[8*i:8*i+8]))
+		print("Round #{0} key       : {1}".format(i+1,round_key[8*i:8*i+8]))
 		t = round(i,t,round_key[8*i:8*i+8])
+	round(4,t,round_key[8:8+8])
 	return t
 
 # Decryption Logic
@@ -112,6 +113,7 @@ def decrypt(cipher_text):
 	print(cipher_text)
 	print("\n")
 	t = cipher_text
+	r_round(1,t,round_key[8:8+8])	
 	for i in range(3):
 		print("Round #{0} key       : {1}".format(i+2,round_key[8*i:8*i+8]))
 		t = r_round(i,t,round_key[8*i:8*i+8])
