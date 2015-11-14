@@ -1,7 +1,4 @@
-#finding modular multiplicative inverse
-# a -> the number whose inverse is to be found out
-# n -> prime number with respect to which the inverse is to be found out
-def modular_inverse(a,n):
+def ReversePrime(a,n):
 	r = 0
 	r1 = n
 	r2 = a

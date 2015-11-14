@@ -1,127 +1,126 @@
 # Assignment 7 
 # Substitution + Permutation Rounds
-# Author : Suman Sahu
-# Roll No.: 712CS2151
 # Compiler : Python 3.x
 
-# Defining the substitution box[S-Box]
-s_box = [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7]
-# Defining the permutation box[P-Box]
-p_box = [0, 3, 4, 6, 2, 5, 1, 7]
-# Defining reverse S-Box and P-Box for decryption
-reverse_s_box = [14, 3, 4, 8, 1, 12, 10, 15, 7, 13, 9, 6, 11, 2, 0, 5]
-reverse_p_box = [0, 6, 4, 1, 2, 5, 3, 7]
-round_key = "11011011010101101101101101011010"
 
-# Encryption Logic
+sbox = [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7]
 
-# Permutation Round 
-def permute(text):
-	t = ''
+pbox = [0, 3, 4, 6, 2, 5, 1, 7]
+
+reverse_sbox = [14, 3, 4, 8, 1, 12, 10, 15, 7, 13, 9, 6, 11, 2, 0, 5]
+
+reverse_pbox = [0, 6, 4, 1, 2, 5, 3, 7]
+
+round_key = "10010111010100010101000100101000"
+
+def permutation(input_text):
+	text = ''
 	for i in range(8):
-		t+=str(text[p_box[i]])
-	return t
+		text += str(input_text[pbox[i]])
+	return text
 
-# Substitution Round
-def substitute(text):
-	t1 = int(text[0:4],2)
-	t2 = int(text[4:],2)
-	t1 = str(format(s_box[t1],'#06b'))[2:]
-	t2 = str(format(s_box[t2],'#06b'))[2:]
-	return t1+t2
-
-def round(r,text,r_key):
+def substitution(input_text):
+	text1 = int(input_text[0:4],2)
+	text2 = int(input_text[4:],2)
+	text1 = str(format(sbox[text1],'#06b'))[2:]
+	text2 = str(format(sbox[text2],'#06b'))[2:]
+	return text1+text2
 	
-	print("After Whitener     : ",end='')
-	print(whitener(text))
-	t = ''
+	
+def rounding(r,text_input,round_key):
+	text = ''
 	for i in range(8):
-		t += str(int(text[i])^int(r_key[i]))
-	print("After XORing       : ",end='')
-	print(t)
-	t = substitute(t)
-	print("After Substitution : ",end='')
-	print(t)
-	t = permute(t)
-	print("After Permutation  : ",end='')
-	print(t)
-
-	print("After Round {0}      : ".format(r+2), end='')
-	print(t)
-	print("After Whitener     : ",end='')
-	print(whitener(text))
-
-	print("\n")
-	return t
-
-def encrypt():
-	plain_text = "10110101"
-	print("Encryption :")
-	print("Plain Text         : ",end='')
-	print(plain_text)
-	print("\n")
-	t = plain_text
-	for i in range(3): 
-		print("Round #{0} key       : {1}".format(i+2,round_key[8*i:8*i+8]))
-		t = round(i,t,round_key[8*i:8*i+8])
-	return t
-
-# Decryption Logic
-r_le = '10101010'
-r_p = '11101001'
-# Reverse Permutation
-def r_permute(text):
-	t = ''
-	for i in range(8):
-		t+=str(text[reverse_p_box[i]])
-	return t
-
-# Reverse Substitution
-def r_substitute(text):
-	t1 = int(text[0:4],2)
-	t2 = int(text[4:],2)
-	t1 = str(format(reverse_s_box[t1],'#06b'))[2:]
-	t2 = str(format(reverse_s_box[t2],'#06b'))[2:]
-	return t1+t2
-
-# Reverse Round
-def r_round(r,text,r_key):
-	text = r_permute(text)
-	print("After Permutation  : ",end='')
+		text += str(int(text_input[i])^int(round_key[i]))
+	print("XOR Operated Text  : ",end='')
 	print(text)
-	text = r_substitute(text)
-	print("After Substitution : ",end='')
+	text = substitution(text)
+	print("Substituted Text   : ",end='')
 	print(text)
-	t = ''
-	for i in range(8):
-		t += str(int(text[i])^int(r_key[i]))
-	print("After XORing       : ",end='')
-	print(t)
-	text = t
-	if(r==3):
-		text = r_permute(text)
-	print("After Round {0}      : ".format(r+2), end='')
+	text = permutation(text)
+	print("Permuted Text      : ",end='')
 	print(text)
+	print("Round {0} ends...".format(r+1), end='')
 	print("\n")
 	return text
 
+def encryption():
+	plain_text = "10101011"
+	print("Encryption :")
+	print("Plain Text  : ",end='')
+	print(plain_text)
+	print()
+	print()
+	t = plain_text
+	for i in range(4): 
+		print("Round #{0} key       : {1}".format(i+1,round_key[8*i:8*i+8]))
+		if i<3 :	
+			t = rounding(i,t,round_key[8*i:8*i+8])
+		elif i == 3:
+			text = ''
+			round_key_last = round_key[8*i:8*i+8]
+			print(round_key_last)
+			for i in range(8):
+				text += str(int(t[i])^int(round_key_last[i]))
+			print("XOR Operated Text  : ",end='')
+			print(text)
+			text = substitution(text)
+			print("Substituted Text   : ",end='')
+			print(text)
+			print("Round 4 ends ...")
+			t = text
+	return t
 
-def decrypt(cipher_text):
-	print("Decryption : ")
+def reverse_permutation(cipher_text):
+	text = ''
+	for i in range(8):
+		text += str(cipher_text[reverse_pbox[i]])
+	return text
+
+
+def reverse_substitution(cipher_text):
+	text1 = int(cipher_text[0:4],2)
+	text2 = int(cipher_text[4:],2)
+	text1 = str(format(reverse_sbox[text1],'#06b'))[2:]
+	text2 = str(format(reverse_sbox[text2],'#06b'))[2:]
+	return text1+text2
+
+def reverse_round(r,text,r_key):
+	if(r!=3):
+		text = reverse_permutation(text)
+		print("Rev Permuted Text  : ",end='')
+		print(text)
+
+	text = reverse_substitution(text)
+	print("Rev Substitute Text: ",end='')
+	print(text)
+	t = ''
+	for i in range(8):
+		t += str(int(text[i])^int(r_key[i]))
+	print("XOR'ed Text        : ",end='')
+	print(t)
+	text = t
+
+	print("Round {0} ends... ".format(r+1), end='')
+	print()
+	print()
+	return text
+
+
+def decryption(cipher_text):
 	print("CipherText : ",end='')
 	print(cipher_text)
 	print("\n")
 	t = cipher_text
-	for i in range(3):
-		print("Round #{0} key       : {1}".format(i+2,round_key[8*i:8*i+8]))
-		t = r_round(i,t,round_key[8*i:8*i+8])
+	for i in range(4):
+		print("Round #{0} key       : {1}".format(i+1,round_key[8*(3-i):8*(3-i)+8]))
+		t = reverse_round(3-i,t,round_key[8*(3-i):8*(3-i)+8])
 
-
-def whitener(text):
-	t = ''
-	for i in range(8):
-		t += str(int(r_le[i])^int(r_p[i]))
-	return t
 if __name__=="__main__":
-	t = encrypt()
-	decrypt(t)
+	t = encryption()
+	print()
+	print("Encryption complete")
+
+	print()
+	decryption(t)
+	print()
+	print("Decryption complete")
