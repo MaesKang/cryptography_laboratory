@@ -44,7 +44,7 @@ def rounding(r,text_input,round_key):
 	return text
 
 def encryption():
-	plain_text = "10101011"
+	plain_text = "10101010"
 	print("Encryption :")
 	print("Plain Text  : ",end='')
 	print(plain_text)
